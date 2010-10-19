@@ -12,6 +12,8 @@ active-record. this trade gave this plugin the capability
 of accessing various databases and abstract details away from what this
 plugin really is suppose to do.
 
+This CLONE brings ruby 1.9.2 compatibility and Heroku (postgres) friendliness.
+
 Who should use this?
 --------------------
 
