@@ -65,7 +65,7 @@ Installation
   1. Install the plugin
      Note: (this will add two migrations and three models to your application)
     <pre><code>
-    $ ./script/plugin install git://github.com/ktlacaelel/openid_active_recod_store.git
+    $ ./script/plugin install git://github.com/artemave/openid_active_recod_store.git
     </pre></code>
 
   2. Migrate
