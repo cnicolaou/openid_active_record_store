@@ -54,9 +54,13 @@ class OpenidStoreActiveRecordTest < ActiveSupport::TestCase
     if expected.nil?
       assert_nil(ret_assoc)
     else
-      assert_equal(expected, ret_assoc)
-      assert_equal(expected.handle, ret_assoc.handle)
-      assert_equal(expected.secret, ret_assoc.secret)
+      %w[assoc_type handle issued lifetime secret].each do |prop|
+        ex, actual = expected.send(prop), ret_assoc.send(prop)
+        if ex.kind_of?(Time)
+          ex, actual = ex.to_i, actual.to_i
+        end
+        assert_equal ex, actual, "#{prop} doesn't match"
+      end
     end
   end
 

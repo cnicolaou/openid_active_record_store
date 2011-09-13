@@ -1,27 +1,27 @@
 require 'openid/util'
 require 'openid/store/interface'
 require 'openid/association'
+require 'openssl'
 
 module OpenID
   module Store
     class ActiveRecord < Interface
-
-      include OpenidStoreActiveRecord
 
       # Put a Association object into storage.
       # When implementing a store, don't assume that there are any limitations
       # on the character set of the server_url.  In particular, expect to see
       # unescaped non-url-safe characters in the server_url field.
       def store_association(server_url, association)
-        oa = OpenidAssociation.new
-        oa.server_url = server_url
-        oa.target = targetize(server_url)
-        oa.handle = association.handle
-        oa.secret = association.secret
-        oa.issued_at = association.issued_at
-        oa.lifetime = association.lifetime
-        oa.assoc_type = association.assoc_type
-        oa.save
+        OpenidAssociation.create!(
+          :server_url => server_url,
+          :target     => targetize(server_url),
+          :handle     => association.handle,
+          :secret     => association.secret,
+          :issued_at  => association.issued,
+          :lifetime   => association.lifetime,
+          :assoc_type => association.assoc_type
+        )
+        true
       end
 
       # Returns a Association object from storage that matches
@@ -89,6 +89,31 @@ module OpenID
         nonces = OpenidNonce.all
         ids = nonces.collect { |n| n.id if (n.timestamp - now).abs > Nonce.skew }
         OpenidNonce.delete ids.compact
+      end
+
+      private
+
+      def targetize(server_url)
+        OpenSSL::Digest::MD5.hexdigest(server_url)
+      end
+
+      def build_association(open_id_association)
+        OpenID::Association.new(
+          open_id_association.handle,
+          open_id_association.secret,
+          open_id_association.issued_at,
+          open_id_association.lifetime,
+          open_id_association.assoc_type
+        )
+      end
+
+      def create_nonce(server_url, timestamp, salt)
+        OpenidNonce.create!(
+          :target     => targetize(server_url),
+          :server_url => server_url,
+          :timestamp  => timestamp
+        )
+        true
       end
 
     end
