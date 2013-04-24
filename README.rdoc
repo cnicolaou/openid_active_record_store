@@ -18,7 +18,7 @@ A rails engine for OpenID/Omniauth that writes to ActiveRecord for the OpenID da
 
 == SYNOPSIS:
 
-    rake openid_active_record_store:install:migrations
+    rake openid_active_record_store_engine:install:migrations
     rake db:migrate
 
     # Omniauth example:
